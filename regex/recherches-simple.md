@@ -326,8 +326,8 @@ Il est possible d'utiliser des **lookaround** au sein d'une expression réguliè
 Pour se faire, il faut utiliser ce qu'on appelle un **lookahead** (se positionner avant) ou un **lookbehind** (se positionner après quelque chose).
 
 Ces groupes **lookaround** sont des **groupes non-capturants**.
-Il existe des version **négatives** permettant de se position avant ou après
-quelque chose qui ne peut pas être sélectionné par le lookaround en question
+Il existe des version **négatives** permettant de se positionner avant ou après
+"quelque chose qui n'est pas sélectionné par le lookaround en question"
 
 **Exemple de positive lookahead:**
 ```
