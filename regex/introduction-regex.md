@@ -55,10 +55,9 @@ Les expressions régulières forment un langage en soi. Nous verrons par la suit
 
 ---
 
-noms de fichier, des globs/wildcard
+todo: noms de fichier, des globs/wildcard
 
 ---
-
 
 Les regex ne sont pleinement exploitables que lorsqu'elles sont utilisées conjointement à des langages de programmation ou des outils spécialisés.
 Aussi, ce ne sont pas les expressions régulières qui s'occuperont de parcourir les dossiers sur vos disques durs puis d'ouvrir les fichiers un par un.

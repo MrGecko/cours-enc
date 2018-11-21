@@ -134,14 +134,16 @@ https://goo.gl/yDjnak
 1. Sélectionner grâce à une regex les références à des siècles (en gardant -ème)
 2. Sachant que le numéro d'édition commence toujours par @ suivi de trois lettres majuscules puis d'une date au format annéeemoisjour, comment récupérer le numéro d'édition du texte précédent ? Ne pas se soucier d'avoir une date cohérente.
 
-3. Sélectionner tous les mots commençant par une majuscules
+3. Sélectionner tous les mots commençant par une majuscule
 
-## Les ancres de début et de fin de ligne
+## Les ancres
 
+### Les ancres de début et de fin de ligne
 * ```^Elles``` permet de sélectionner les mots **Elles** uniquement s'ils se trouvent en début de ligne
 * ```Monsieur !$``` permet de sélectionner les expressions **Monsieurs !** uniquement s'ils se trouvent en début de ligne
 * ```^Monsieur !$``` permet de sélectionner les expressions **Monsieurs !** uniquement s'ils se trouvent à la fois en début de ligne et en fin de ligne, **c'est-à-dire les lignes ne comportant que le texte Monsieur !**
 
+# Les ancres de début et de fin de mot
 
 ## Les groupes de motifs
 
@@ -154,7 +156,245 @@ Les motifs peuvent être groupés au sein d'une même expression régulière en 
 ** Exercice 4 **
 1. Écrire l'expression régulière permettant de sélectionner dans deux groupes distincts 1) le nom d'une maison d'édition 2) le numéro de l'édition.
 
-### La répétition de groupes
-### Les sous-groupes
+** Exercice 5 **
+1. Écrire la regex permettant de sélectionner toutes les dates dans un textes
+2. Faire évoluer l'expression pour prendre en compte les intervalles
+```
+([0-9]{3,4})(-([0-9]{3,4}))?
+```
 
-# La substitution
+## La négation
+```
+[^@]  // capture tout ce qui n'est pas un @
+```
+**Questions**
+
+1. Quelle est la différence entre ```[^abc]``` et ```(^abc)``` ?
+2. Donner une classe équivalente à l'expression ```[^\w]```
+
+## La substitution
+```
+s/([0-9]{2}):([0-9]{2})/\1h\2/g
+```
+```
+Il était 10:30 et je l'attendais toujours.
+Nous avions pourtant rdv à 10:20.
+```
+
+### La répétition de groupes
+
+Lorsqu'un groupe capture une expression, cette expression peut être citée à nouveau plus loin dans la regex :
+```
+<([^>\/]+)(.*)>(.*)<\/\1>          // il y a trois groupes dans cette regex
+```
+Utiliser ```\1``` permet de citer à nouveau l'expression capturée par le **premier** groupe ```([^>\/]+)```
+Cela permet de sélectionner uniquement le cas où la balise fermante correspond à la balise ouvrante :
+```xml
+<idno type="numero" id="23">3</fileDesc>     // ne sera pas capturé
+<idno type="numero" id="23">3</idno>         // sera capturé
+```
+
+** Exercice 6 **
+
+https://regex101.com/r/bZjdCw/6
+
+Restructuration de la couche texte du PDF des premières pages du Poète assassiné d’Apollinaire.
+
+1. Identifier les parties de texte
+2. Identifier les opérations à effectuer
+2. Identifier les cas particuliers
+
+
+Rassembler les numéros des parties et leur titre :
+```
+s/^([IXVCL]+)\n(.*)/<head>\1. \2</head>/g
+```
+Les parties en elle-mêmes sont mises dans des ```<div>```
+```
+s/(<head>)/<div>\n\1/g
+```
+```
+s/(<div>.*)/</div>\n\1/g
+```
+Raccorder les césures (ligne finissant par un tiret)
+```
+s/-\n(.*)/\1/g
+```
+Puis joindre les lignes d'un paragraphe (càd toutes les lignes commençant par une minuscule)
+```
+s/\n([a-z])/ \1/g
+```
+On s'occupe également des cas particuliers, par exemple les dialogues en début de ligne
+```
+s/\n(«.*)/ \1/g
+```
+Enfin, on regroupe ces lignes recomposées en paragraphes
+```
+s/(^[A-Z].*)/<p>\1</p>/g
+```
+
+## Les alternatives
+Il est possible de modéliser des alternatives au sein d'un groupe de façon à sélectionner une expression dont la valeur correspondrait à au moins une des valeurs du groupe.
+
+**Ex:** ```(chat|chien)s``` sélectionnerait à la fois les occurences de chats et de chiens dans le texte.
+
+**Autre exemple :** sélectionner le contenu de certaines balises seulement :
+```
+<(p|l|div)>(.*)(<\/\1>)
+```
+```html
+<p>un paragraphe</p>
+<div>diviser pour mieux imbriquer</div>
+<l>un vers de bon matin</l>
+<div>un peu d'incohérence</l>
+```
+**Exercice**
+
+Sélectionnez grâce à la fonctionnalité des alternatives toutes les heures de la matinée
+```
+08:30
+12:45
+23:34
+7:09
+11:00
+13:11
+6:45
+12:00
+11:59
+```
+**Question**
+
+1. Que signifie l'expression ```(^abc)|(^def)``` ?
+
+
+**Exercice**
+Les données sont issues du fichier data/haut_moyen_age.txt
+1. Dénombrer les différents cas à traiter. Lesquels semblent n'être que des exceptions ? Que faire des exceptions ? Doivent-elles être traitées avant ou après le passage des expressions régulières ?
+2. Écrire une expression qui transforme une date ou un intervalle de deux dates en une balise <date> avec les attributs **min** et **max** dans le cas d'un intervalle et **when** dans le cas d'une date ponctuelle
+3. Écrire une expression qui permet de transformer les listes à puces en listes à puces HTML : ```<ul><li>...</li><li>...</li></ul>```
+4. Éditorialiser l'ensemble du fichier en un fichier HTML avec les dates dans des <date> et les listes à puces dans des <ul>
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Cet article présente une chronologie sélective du Haut Moyen Âge.</title>
+</head>
+<body>
+  <!-- Insérer ici le résultat-->
+</body>
+</html>
+ ```
+
+## Lazy && Greedy
+
+```
+".*?"
+```
+```
+"a" ou "b" ou "c"
+```
+** Questions **
+
+1. Quelle différence observez-vous entre la capture **lazy** et la capture **greedy** ?
+
+## Groupe non-capturant
+
+Afin d'optimiser l'expression pour gagner en performances il est possible de définir des groupes qui ne seront pas capturés (càd ils ne seront pas accessibles par un numéro).
+
+```
+(?:Jane|John|Alison)\s(.*?)\s(?:Smith|Smuth)
+```
+```
+Jane Isabell Smith
+Jane Gladyss Smuth
+John John Smith
+Robert John Smith
+```
+** Questions **
+
+1. Combien de groupes comporte cette expression ?
+2. Combien de groupes cette expression peut-elle capturer ?
+
+### Lookaround
+Les **lookaround** sont des groupes non-capturant permettant de se positionner dans le flux de texte.
+
+Il est possible d'utiliser des **lookaround** au sein d'une expression régulière afin de se positionner dans le texte avant de démarrer la procédure de sélection et de capture.
+Pour se faire, il faut utiliser ce qu'on appelle un **lookahead** (se positionner avant) ou un **lookbehind** (se positionner après quelque chose).
+
+Ces groupes **lookaround** sont des **groupes non-capturants**.
+Il existe des version **négatives** permettant de se position avant ou après
+quelque chose qui ne peut pas être sélectionné par le lookaround en question
+
+**Exemple de positive lookahead:**
+```
+[0-9]{3,4}(?=bc)
+```
+```
+180 avant jc.
+560bc
+Il avait 240 boeufs.
+```
+**Exemple de negative lookahead:**
+```
+[0-9]{3,4}(?!bc)
+```
+
+**Exemple de positive lookbehind:**
+```
+(?<=Primus )Caesar
+```
+```
+Primus Caesar, Caesar Primus, Caesar Morentis
+```
+**Exemple de negative lookbehind:**
+```
+(?<!Primus )Caesar
+```
+```
+Primus Caesar, Caesar Primus, Morentis Caesar
+```
+
+
+**Exercices**
+
+https://regex101.com/r/vEiHpP/1
+
+1. Utiliser un **lookahead** et un **lookbehind** afin de sélectionner tout le contenu de la balise ```<body>```
+2. Récupérer le contenu des vers de la transcription
+3. Récupérer le contenu des vers de la traduction
+
+# Les regex utilisées avec différents outils
+
+## egrep & comptage de résultat
+```
+egrep ^[IXCV]+$ data/apollinaire.txt | wc -l
+```
+## les regex en Python
+```python
+import re
+import sys
+
+# le nom du fichier à analyser et passé en paramètre du programme
+filename = sys.argv[1]
+
+# lecture du fichier
+with open(filename) as f:
+    lines = f.readlines()
+# on recompose le texte en une seule variable
+txt = "".join(lines)
+
+# on récupére le contenu de la traduction
+traduction = re.findall("(?<=\"translation\">\n)((?:.|\n)*?)<\/div>", txt)
+
+# on récupère les vers
+if len(traduction) > 0:
+    vers = re.findall("<l>(.*)</l>", traduction[0][0])
+
+    # afficher le nombre de vers
+    print(filename, len(vers))
+
+    # on écrit les vers dans un second fichier
+    with open(filename + ".traduction.txt", 'w') as fo:
+        fo.writelines("\n".join(vers))
+
+```
