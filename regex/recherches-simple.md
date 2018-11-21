@@ -268,9 +268,13 @@ Sélectionnez grâce à la fonctionnalité des alternatives toutes les heures de
 
 
 **Exercice**
+
 Les données sont issues du fichier data/haut_moyen_age.txt
-1. Dénombrer les différents cas à traiter. Lesquels semblent n'être que des exceptions ? Que faire des exceptions ? Doivent-elles être traitées avant ou après le passage des expressions régulières ?
-2. Écrire une expression qui transforme une date ou un intervalle de deux dates en une balise <date> avec les attributs **min** et **max** dans le cas d'un intervalle et **when** dans le cas d'une date ponctuelle
+1. Dénombrer les différents cas à traiter.
+ - Lesquels semblent n'être que des exceptions ?
+ - Que faire des exceptions ?
+ - Doivent-elles être traitées avant ou après le passage des expressions régulières ?
+2. Écrire une (ou plusieurs) expression qui transforme une date ou un intervalle de deux dates en une balise <date> avec les attributs **notBefore** et **notAfter** dans le cas d'un intervalle et **when** dans le cas d'une date ponctuelle
 3. Écrire une expression qui permet de transformer les listes à puces en listes à puces HTML : ```<ul><li>...</li><li>...</li></ul>```
 4. Éditorialiser l'ensemble du fichier en un fichier HTML avec les dates dans des <date> et les listes à puces dans des <ul>
 ```html
@@ -353,6 +357,10 @@ Primus Caesar, Caesar Primus, Caesar Morentis
 ```
 Primus Caesar, Caesar Primus, Morentis Caesar
 ```
+
+** Questions **
+
+1.  Que signifie l'expression suivante ? ```<l>(.*)<\/l>\s*(?=<\/body>)```
 
 
 **Exercices**
