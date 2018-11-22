@@ -250,7 +250,7 @@ Il est possible de modéliser des alternatives au sein d'un groupe de façon à 
 ```
 **Exercice**
 
-Sélectionnez grâce à la fonctionnalité des alternatives toutes les heures de la matinée
+Sélectionnez grâce à aux alternatives toutes les lignes correspondant à des heures de la matinée
 ```
 08:30
 12:45
