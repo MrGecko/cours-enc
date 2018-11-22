@@ -384,6 +384,7 @@ import sys
 
 # le nom du fichier à analyser et passé en paramètre du programme
 filename = sys.argv[1]
+div_type =  sys.argv[2]
 
 # lecture du fichier
 with open(filename) as f:
@@ -391,18 +392,16 @@ with open(filename) as f:
 # on recompose le texte en une seule variable
 txt = "".join(lines)
 
-# on récupére le contenu de la traduction
-traduction = re.findall("(?<=\"translation\">\n)((?:.|\n)*?)<\/div>", txt)
+# on récupére le contenu de la balise <div>
+contenu_div = re.findall("(?<=%s\">\n)((?:.|\n)*?)<\/div>" % div_type, txt)
 
 # on récupère les vers
-if len(traduction) > 0:
-    vers = re.findall("<l>(.*)</l>", traduction[0][0])
-
+if len(contenu_div) > 0:
+    vers = re.findall("<l>(.*)</l>", contenu_div[0])
     # afficher le nombre de vers
     print(filename, len(vers))
 
-    # on écrit les vers dans un second fichier
-    with open(filename + ".traduction.txt", 'w') as fo:
+    # on écrit le contenu des vers dans un second fichier
+    with open(filename + ".%s.txt" % div_type, 'w') as fo:
         fo.writelines("\n".join(vers))
-
 ```
